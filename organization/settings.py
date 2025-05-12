@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "organization.common",
     "organization.organizations",
     "organization.nip",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -54,7 +55,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "organization.urls"
-
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -103,6 +106,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Organization API",
+    "DESCRIPTION": "API documentation for the Organization project.",
+    "VERSION": "1.0.0",
+    "CAMELIZE_NAMES": True,
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAuthenticated"],
+    "SCHEMA_PATH_PREFIX": "/api",
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
