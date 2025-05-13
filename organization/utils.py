@@ -11,3 +11,15 @@ def apply_user_context(instance):
         instance.created_by = getattr(instance, "created_by", user)
 
     return instance
+
+
+def remove_ids(arg: dict | list) -> dict:
+    if isinstance(arg, dict):
+        if "id" in arg:
+            del arg["id"]
+        for value in arg.values():
+            remove_ids(value)
+    if isinstance(arg, list):
+        for value in arg:
+            remove_ids(value)
+    return arg
