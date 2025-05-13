@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     "organization.organizations",
     "organization.nip",
     "drf_spectacular",
+    "rest_framework",
+    "django_filters",
 ]
 
 MIDDLEWARE = [
@@ -52,6 +54,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "crum.CurrentRequestUserMiddleware",
 ]
 
 ROOT_URLCONF = "organization.urls"

@@ -1,7 +1,8 @@
-from django.db import models
 from django.conf import settings
-from organization.utils import apply_user_context
 from django.core.validators import RegexValidator
+from django.db import models
+
+from organization.utils import apply_user_context
 
 
 class BaseModel(models.Model):
