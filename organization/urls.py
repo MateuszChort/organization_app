@@ -24,6 +24,7 @@ from drf_spectacular.views import (
 from rest_framework import routers
 
 from organization.common.urls import router as common_router
+from organization.nip.urls import urlpatterns as nip
 from organization.organizations.urls import router as organizations_router
 
 router = routers.DefaultRouter()
@@ -32,6 +33,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/common/", include(common_router.urls)),
     path("api/organizations/", include(organizations_router.urls)),
+    path("api/nip/", include(nip)),
     path("api-auth/", include("rest_framework.urls")),
 ]
 if settings.DEBUG:

@@ -1,5 +1,6 @@
 import pytest
 from rest_framework import status
+
 from organization.common.models import AddressKind, BankAccount, Currency, Location
 from organization.utils import remove_ids
 

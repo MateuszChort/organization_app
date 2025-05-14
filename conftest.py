@@ -1,13 +1,13 @@
-import pytest
 from itertools import cycle
 
-from rest_framework.test import APIClient
+import django
+import pytest
+from crum import set_current_user
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from model_bakery import baker, seq
 from model_bakery.recipe import Recipe
-from crum import set_current_user
-import django
+from rest_framework.test import APIClient
 
 django.setup()
 
@@ -102,3 +102,21 @@ def fixture_bank_account(organization, currency):
         _quantity=2,
     )
     return bank_account
+
+
+@pytest.fixture(name="nip_search_mock")
+def fixture_nip_search_mock(mocker):
+    mock = mocker.patch("organization.nip.views.nip_search")
+    mock.return_value = [{"NIP": "123456"}]
+    return mock
+
+
+@pytest.fixture(name="nip_search_mock_404")
+def fixture_nip_search_mock_404(mocker):
+    mock = mocker.patch("organization.nip.views.nip_search")
+    mock.return_value = [
+        {
+            "ErrorCode": "4",
+        }
+    ]
+    return mock
