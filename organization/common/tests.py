@@ -1,6 +1,6 @@
 import pytest
 from rest_framework import status
-from organization.common.models import AddressKind, BankAccount, Currency
+from organization.common.models import AddressKind, BankAccount, Currency, Location
 from organization.utils import remove_ids
 
 
@@ -238,3 +238,107 @@ def test_currency_delete(auth_client, currency):
     assert response.status_code == status.HTTP_204_NO_CONTENT
     with pytest.raises(Currency.DoesNotExist):
         currency.refresh_from_db()
+
+
+@pytest.mark.django_db
+def test_location_list(auth_client, location):
+    response = auth_client.get("/api/common/location/")
+    expected_response = [
+        {
+            "name": "Poland",
+            "parent_location": None,
+            "code": "PL",
+            "location_kind": "CR",
+        },
+        {
+            "name": "Poznan",
+            "parent_location": None,
+            "code": "POZ",
+            "location_kind": "CT",
+        },
+    ]
+    assert response.status_code == status.HTTP_200_OK
+    assert remove_ids(response.data) == expected_response
+
+
+@pytest.mark.django_db
+def test_location_retrieve(auth_client, location):
+    response = auth_client.get(f"/api/common/location/{location[0].id}/")
+    expected_response = {
+        "name": "Poland",
+        "parent_location": None,
+        "code": "PL",
+        "location_kind": "CR",
+    }
+    assert response.status_code == status.HTTP_200_OK
+    assert remove_ids(response.data) == expected_response
+
+
+@pytest.mark.django_db
+def test_location_create(auth_client):
+    post_parameters = {
+        "name": "New Location",
+        "parent_location": None,
+        "code": "NL",
+        "location_kind": "CR",
+    }
+    response = auth_client.post("/api/common/location/", post_parameters, format="json")
+    assert response.status_code == status.HTTP_201_CREATED
+    assert remove_ids(response.data) == post_parameters
+
+
+@pytest.mark.django_db
+def test_location_create_with_parent(auth_client, location):
+    post_parameters = {
+        "name": "New Location with Parent",
+        "parent_location": location[0].id,
+        "code": "NLP",
+        "location_kind": "CT",
+    }
+    response = auth_client.post("/api/common/location/", post_parameters, format="json")
+    assert response.status_code == status.HTTP_201_CREATED
+    assert remove_ids(response.data) == post_parameters
+
+
+@pytest.mark.django_db
+def test_location_update(auth_client, location):
+    put_parameters = {
+        "name": "Updated Location",
+        "parent_location": None,
+        "code": "UL",
+        "location_kind": "CT",
+    }
+    response = auth_client.put(
+        f"/api/common/location/{location[0].id}/", put_parameters, format="json"
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert remove_ids(response.data) == put_parameters
+
+
+@pytest.mark.django_db
+def test_location_update_with_same_parent(auth_client, location):
+    location = Location.objects.get(id=location[0].id)
+    location.parent_location = location
+    location.save()
+    put_parameters = {
+        "name": "New Location with Same Parent",
+        "parent_location": location.id,
+        "code": "NLS",
+        "location_kind": "CT",
+    }
+    response = auth_client.patch(
+        f"/api/common/location/{location.id}/", put_parameters, format="json"
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.data == {
+        "non_field_errors": ["Parent location cannot reference to the same object"]
+    }
+
+
+@pytest.mark.django_db
+def test_location_delete(auth_client, location):
+    location = Location.objects.get(id=location[0].id)
+    response = auth_client.delete(f"/api/common/location/{location.id}/")
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    with pytest.raises(Location.DoesNotExist):
+        location.refresh_from_db()
