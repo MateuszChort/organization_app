@@ -80,7 +80,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "organization.wsgi.application"
 
-
+REGONAPIKEY = os.environ.get("REGONAPIKEY")
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 

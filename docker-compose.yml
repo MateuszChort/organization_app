@@ -21,6 +21,7 @@ services:
       - DB_USER=devuser
       - DB_PASS=changeme
       - DEBUG=1
+      - REGONAPIKEY=your_api_key
     depends_on:
       db:
         condition: service_healthy
